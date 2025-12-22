@@ -44,7 +44,7 @@
 
 ```bash
 # 克隆项目
-https://gitee.com/dzq23/art_design_vue3.git
+https://github.com/dongzq0624/Vue3-admin.git
 cd art-design-pro-vue3
 
 # 安装前端依赖
@@ -329,7 +329,7 @@ MIT License
 如有问题或建议，欢迎联系项目团队：
 
 - Email: support@artdesignpro.com
-- Gitee: https://gitee.com/dzq23/art_design_vue3.git
+- Github: https://github.com/dongzq0624/Vue3-admin.git
 
 ---
 
