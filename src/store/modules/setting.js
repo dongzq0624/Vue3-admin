@@ -35,7 +35,7 @@ import { ref, computed } from 'vue'
 import AppConfig from '@/config'
 import { SystemThemeEnum } from '@/enums/appEnum'
 import { setElementThemeColor } from '@/utils/ui'
-import { useCeremony } from '@/hooks/core/useCeremony'
+
 import { StorageConfig } from '@/utils'
 import { SETTING_DEFAULT_CONFIG } from '@/config/setting'
 
@@ -148,14 +148,6 @@ export const useSettingStore = defineStore(
      */
     const getCustomRadius = computed(() => {
       return customRadius.value + 'rem' || SETTING_DEFAULT_CONFIG.customRadius + 'rem'
-    })
-
-    /**
-     * 是否显示烟花
-     * 根据当前日期和节日日期判断是否显示烟花效果
-     */
-    const isShowFireworks = computed(() => {
-      return festivalDate.value === useCeremony().currentFestivalData.value?.date ? false : true
     })
 
     /**
@@ -408,7 +400,7 @@ export const useSettingStore = defineStore(
       isDark,
       getMenuOpenWidth,
       getCustomRadius,
-      isShowFireworks,
+
       switchMenuLayouts,
       setMenuOpenWidth,
       setGlopTheme,

@@ -34,15 +34,6 @@
           @click="visibleMenu"
         />
 
-        <!-- 刷新按钮 -->
-        <ArtIconButton
-          v-if="shouldShowRefreshButton"
-          icon="ri:refresh-line"
-          class="!ml-3 refresh-btn max-sm:!hidden"
-          :style="{ marginLeft: !isLeftMenu ? '10px' : '0' }"
-          @click="reload"
-        />
-
         <!-- 面包屑 -->
         <ArtBreadcrumb
           v-if="(shouldShowBreadcrumb && isLeftMenu) || (shouldShowBreadcrumb && isDualMenu)"
@@ -56,28 +47,19 @@
       </div>
 
       <div class="flex-c gap-2.5">
-        <!-- 搜索 -->
-        <div
-          v-if="shouldShowGlobalSearch"
-          class="flex-cb w-40 h-9 px-2.5 c-p border border-g-400 rounded-custom-sm max-md:!hidden"
-          @click="openSearchDialog"
-        >
-          <div class="flex-c">
-            <ArtSvgIcon icon="ri:search-line" class="text-sm text-g-500" />
-            <span class="ml-1 text-xs font-normal text-g-500">{{ $t('topBar.search.title') }}</span>
-          </div>
-          <div class="flex-c h-5 px-1.5 text-g-500/80 border border-g-400 rounded">
-            <ArtSvgIcon v-if="isWindows" icon="vaadin:ctrl-a" class="text-sm" />
-            <ArtSvgIcon v-else icon="ri:command-fill" class="text-xs" />
-            <span class="ml-0.5 text-xs">k</span>
-          </div>
-        </div>
-
+        <!-- 刷新按钮 -->
+        <ArtIconButton
+          v-if="shouldShowRefreshButton"
+          icon="ri:refresh-line"
+          class="!ml-3 refresh-btn max-sm:!hidden"
+          :style="{ marginLeft: !isLeftMenu ? '10px' : '0' }"
+          @click="reload"
+        />
         <!-- 全屏按钮 -->
         <ArtIconButton
           v-if="shouldShowFullscreen"
           :icon="isFullscreen ? 'ri:fullscreen-exit-line' : 'ri:fullscreen-fill'"
-          :class="[!isFullscreen ? 'full-screen-btn' : 'exit-full-screen-btn', 'ml-3']"
+          :class="[!isFullscreen ? 'full-screen-btn' : 'exit-full-screen-btn']"
           class="max-md:!hidden"
           @click="toggleFullScreen"
         />
@@ -104,15 +86,7 @@
           </template>
         </ElDropdown>
 
-        <!-- 通知按钮 -->
-        <ArtIconButton
-          v-if="shouldShowNotification"
-          icon="ri:notification-2-line"
-          class="notice-button relative"
-          @click="visibleNotice"
-        >
-          <div class="absolute top-2 right-2 size-1.5 !bg-danger rounded-full"></div>
-        </ArtIconButton>
+        <!-- 通知已移除 -->
 
         <!-- 设置按钮 -->
         <div v-if="shouldShowSettings">
@@ -148,13 +122,12 @@
     <!-- 标签页 -->
     <ArtWorkTab />
 
-    <!-- 通知 -->
-    <ArtNotification v-model:value="showNotice" ref="notice" />
+    <!-- 通知组件已移除 -->
   </div>
 </template>
 
 <script setup>
-  import { ref, computed, onMounted, onUnmounted } from 'vue'
+  import { computed, onMounted, onUnmounted } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { useRouter } from 'vue-router'
   import { storeToRefs } from 'pinia'
@@ -173,9 +146,6 @@
 
   defineOptions({ name: 'ArtHeaderBar' })
 
-  // 检测操作系统类型
-  const isWindows = navigator.userAgent.includes('Windows')
-
   const router = useRouter()
   const { locale } = useI18n()
   const { width } = useWindowSize()
@@ -189,9 +159,7 @@
     shouldShowMenuButton,
     shouldShowRefreshButton,
     shouldShowBreadcrumb,
-    shouldShowGlobalSearch,
     shouldShowFullscreen,
-    shouldShowNotification,
     shouldShowLanguage,
     shouldShowSettings,
     shouldShowThemeToggle
@@ -203,9 +171,6 @@
   const { language } = storeToRefs(userStore)
   const { menuList } = storeToRefs(menuStore)
 
-  const showNotice = ref(false)
-  const notice = ref(null)
-
   // 菜单类型判断
   const isLeftMenu = computed(() => menuType.value === MenuTypeEnum.LEFT)
   const isDualMenu = computed(() => menuType.value === MenuTypeEnum.DUAL_MENU)
@@ -216,12 +181,9 @@
 
   onMounted(() => {
     initLanguage()
-    document.addEventListener('click', bodyCloseNotice)
   })
 
-  onUnmounted(() => {
-    document.removeEventListener('click', bodyCloseNotice)
-  })
+  onUnmounted(() => {})
 
   /**
    * 切换全屏状态
@@ -288,36 +250,10 @@
   }
 
   /**
-   * 打开全局搜索对话框
-   */
-  const openSearchDialog = () => {
-    mittBus.emit('openSearchDialog')
-  }
-
-  /**
    * 点击页面其他区域关闭通知面板
    * @param {Event} e - 点击事件对象
    */
-  const bodyCloseNotice = (e) => {
-    if (!showNotice.value) return
-
-    const target = e.target
-
-    // 检查是否点击了通知按钮或通知面板内部
-    const isNoticeButton = target.closest('.notice-button')
-    const isNoticePanel = target.closest('.art-notification-panel')
-
-    if (!isNoticeButton && !isNoticePanel) {
-      showNotice.value = false
-    }
-  }
-
-  /**
-   * 切换通知面板显示状态
-   */
-  const visibleNotice = () => {
-    showNotice.value = !showNotice.value
-  }
+  // 通知相关逻辑已移除
 </script>
 
 <style lang="scss" scoped>
