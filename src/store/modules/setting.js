@@ -79,6 +79,8 @@ export const useSettingStore = defineStore(
     const showWorkTab = ref(SETTING_DEFAULT_CONFIG.showWorkTab)
     /** 是否显示语言切换 */
     const showLanguage = ref(SETTING_DEFAULT_CONFIG.showLanguage)
+    /** 是否显示错误日志按钮 */
+    const showErrorLogButton = ref(SETTING_DEFAULT_CONFIG.showErrorLogButton)
     /** 是否显示进度条 */
     const showNprogress = ref(SETTING_DEFAULT_CONFIG.showNprogress)
     /** 是否显示设置引导 */
@@ -382,6 +384,7 @@ export const useSettingStore = defineStore(
       autoClose,
       showWorkTab,
       showLanguage,
+      showErrorLogButton,
       showNprogress,
       colorWeak,
       showSettingGuide,

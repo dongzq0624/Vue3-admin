@@ -55,8 +55,8 @@ export class RoutePermissionValidator {
     }
 
     for (const menuItem of menuList) {
-      // 跳过隐藏的菜单项
-      if (menuItem.meta?.isHide || !menuItem.path) {
+      // 跳过没有路径的菜单项，但保留隐藏路由（用于权限验证）
+      if (!menuItem.path) {
         continue
       }
 

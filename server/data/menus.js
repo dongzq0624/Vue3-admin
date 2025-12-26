@@ -202,33 +202,17 @@ export const menus = [
   },
   {
     id: 5,
-    path: '/outside',
-    name: 'Outside',
-    component: '/index/index',
+    path: '/error-dashboard',
+    name: 'ErrorDashboard',
+    component: '/error-dashboard',
     meta: {
-      title: 'menus.outside.title',
-      icon: 'ri:external-link-line',
-      isHide: false,
+      title: '错误监控大屏',
+      icon: 'ri:dashboard-line',
+      isHide: true,
       isHideTab: false,
-      keepAlive: false,
+      keepAlive: true,
       roles: ['R_SUPER']
-    },
-    children: [
-      {
-        id: 51,
-        path: 'iframe/:path',
-        name: 'Iframe',
-        component: '/outside/Iframe',
-        meta: {
-          title: 'menus.outside.iframe',
-          icon: 'ri:external-link-line',
-          isHide: true,
-          isHideTab: false,
-          keepAlive: false,
-          roles: ['R_SUPER']
-        }
-      }
-    ]
+    }
   }
 ]
 

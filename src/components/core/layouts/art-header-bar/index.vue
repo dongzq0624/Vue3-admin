@@ -63,6 +63,14 @@
           class="max-md:!hidden"
           @click="toggleFullScreen"
         />
+        <!-- 错误日志按钮 -->
+        <ArtIconButton
+          v-if="shouldShowErrorLogButton && isSuperAdmin"
+          icon="ri:alert-line"
+          class="error-log-btn max-md:!hidden"
+          @click="openErrorDashboard"
+          title="错误监控大屏"
+        />
 
         <!-- 国际化按钮 -->
         <ElDropdown
@@ -162,7 +170,8 @@
     shouldShowFullscreen,
     shouldShowLanguage,
     shouldShowSettings,
-    shouldShowThemeToggle
+    shouldShowThemeToggle,
+    shouldShowErrorLogButton
   } = useHeaderBar()
 
   const { menuOpen, systemThemeColor, showSettingGuide, menuType, isDark, tabStyle } =
@@ -170,6 +179,12 @@
 
   const { language } = storeToRefs(userStore)
   const { menuList } = storeToRefs(menuStore)
+
+  // 检查用户是否为超级管理员
+  const isSuperAdmin = computed(() => {
+    const userInfo = userStore.info
+    return userInfo?.roles?.includes('R_SUPER') || false
+  })
 
   // 菜单类型判断
   const isLeftMenu = computed(() => menuType.value === MenuTypeEnum.LEFT)
@@ -207,6 +222,14 @@
    */
   const toHome = () => {
     router.push(homePath.value)
+  }
+
+  /**
+   * 打开错误监控大屏（外链跳转）
+   */
+  const openErrorDashboard = () => {
+    // 在当前标签页跳转到错误监控大屏
+    router.push('/error-dashboard')
   }
 
   /**
@@ -368,6 +391,10 @@
 
   .exit-full-screen-btn:hover :deep(.art-svg-icon) {
     animation: shrink 0.6s forwards;
+  }
+
+  .error-log-btn:hover :deep(.art-svg-icon) {
+    animation: shake 0.5s ease-in-out;
   }
 
   .notice-button:hover :deep(.art-svg-icon) {

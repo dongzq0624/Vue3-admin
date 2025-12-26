@@ -13,8 +13,8 @@ import { getAllMenus } from '../data/menus.js'
 
 export const systemRouter = express.Router()
 
-// 所有系统管理路由都需要认证
-systemRouter.use(authenticateToken)
+// 注意：不在路由器级别应用全局认证中间件
+// 而是在具体的路由处理函数中根据需要应用
 
 /**
  * 获取用户列表（分页）
@@ -41,7 +41,7 @@ systemRouter.use(authenticateToken)
  *   }
  * }
  */
-systemRouter.get('/user/list', async (req, res, next) => {
+systemRouter.get('/user/list', authenticateToken, async (req, res, next) => {
   try {
     const { current = 1, size = 20, userName, userGender, userPhone, userEmail, status } = req.query
 
@@ -117,7 +117,7 @@ systemRouter.get('/user/list', async (req, res, next) => {
  *   }
  * }
  */
-systemRouter.get('/role/list', async (req, res, next) => {
+systemRouter.get('/role/list', authenticateToken, async (req, res, next) => {
   try {
     const { current = 1, size = 20, roleName, roleCode, description, enabled } = req.query
 
@@ -168,7 +168,7 @@ systemRouter.get('/role/list', async (req, res, next) => {
  *   "data": [...]
  * }
  */
-systemRouter.get('/v3/system/menus/simple', async (req, res, next) => {
+systemRouter.get('/v3/system/menus/simple', authenticateToken, async (req, res, next) => {
   try {
     const menus = getAllMenus()
 

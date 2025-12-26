@@ -12,6 +12,11 @@ import { extractTokenFromHeader, verifyAccessToken } from '../utils/jwt.js'
  * 验证请求头中的 accessToken，验证通过后将用户信息添加到 req.user
  */
 export function authenticateToken(req, res, next) {
+  // 跳过错误报告相关的路由，这些路由不需要认证
+  if (req.originalUrl.includes('/api/error-report')) {
+    return next()
+  }
+
   // 提取 token
   const token = extractTokenFromHeader(req)
 

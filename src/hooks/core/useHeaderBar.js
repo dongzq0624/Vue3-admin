@@ -31,8 +31,14 @@ export function useHeaderBar() {
   const headerBarConfigRef = computed(() => headerBarConfig)
 
   // 从store中获取相关状态
-  const { showMenuButton, showFastEnter, showRefreshButton, showCrumbs, showLanguage } =
-    storeToRefs(settingStore)
+  const {
+    showMenuButton,
+    showFastEnter,
+    showRefreshButton,
+    showCrumbs,
+    showLanguage,
+    showErrorLogButton
+  } = storeToRefs(settingStore)
 
   /**
    * 检查特定功能是否启用
@@ -105,6 +111,11 @@ export function useHeaderBar() {
   // 检查主题切换是否显示
   const shouldShowThemeToggle = computed(() => {
     return isFeatureEnabled('themeToggle')
+  })
+
+  // 检查错误日志按钮是否显示
+  const shouldShowErrorLogButton = computed(() => {
+    return isFeatureEnabled('errorLog') && showErrorLogButton.value
   })
 
   // 获取快速入口的最小宽度
@@ -183,6 +194,7 @@ export function useHeaderBar() {
     shouldShowLanguage, // 是否显示语言切换
     shouldShowSettings, // 是否显示设置面板
     shouldShowThemeToggle, // 是否显示主题切换
+    shouldShowErrorLogButton, // 是否显示错误日志按钮
 
     // 配置相关
     fastEnterMinWidth, // 快速入口最小宽度

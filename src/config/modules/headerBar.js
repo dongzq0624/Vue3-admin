@@ -55,6 +55,10 @@ export const headerBarConfig = {
   themeToggle: {
     enabled: true,
     description: '主题切换功能（明暗主题）'
+  },
+  errorLog: {
+    enabled: true,
+    description: '错误日志监控按钮（仅超级管理员可见）'
   }
 }
 
