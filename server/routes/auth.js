@@ -68,7 +68,8 @@ authRouter.post('/login', async (req, res, next) => {
     const tokenPayload = {
       userId: user.userId,
       userName: user.userName,
-      email: user.userEmail || user.email || ''
+      email: user.userEmail || user.email || '',
+      roles: user.roles || []
     }
 
     // 生成 accessToken 和 refreshToken
@@ -131,11 +132,23 @@ authRouter.post('/refresh', async (req, res, next) => {
       })
     }
 
-    // 生成新的 token 载荷
+    // 获取用户最新信息（包括角色）
+    const user = findUserByUserName(decoded.userName)
+
+    if (!user) {
+      return res.status(401).json({
+        code: 401,
+        msg: '用户不存在',
+        data: null
+      })
+    }
+
+    // 生成新的 token 载荷（包含角色信息）
     const tokenPayload = {
-      userId: decoded.userId,
-      userName: decoded.userName,
-      email: decoded.email || ''
+      userId: user.userId,
+      userName: user.userName,
+      email: user.userEmail || user.email || '',
+      roles: user.roles || []
     }
 
     // 生成新的 accessToken

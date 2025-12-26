@@ -12,73 +12,45 @@
 export const users = [
   {
     userId: 1,
-    userName: 'admin',
+    userName: 'super',
     password: '123456', // 实际项目中应该使用 bcrypt 加密存储
-    userEmail: 'admin@example.com',
+    userEmail: 'super@example.com',
     userPhone: '13800138000',
     userGender: 'male',
     avatar: '',
     status: '1', // '1': 在线, '2': 离线, '3': 异常, '4': 注销
-    roles: ['R_SUPER'], // 超级管理员角色
+    roles: ['super'], // 超级管理员角色 - 所有页面和按钮权限
     buttons: ['add', 'edit', 'delete', 'view', 'export', 'import'], // 所有按钮权限
     createTime: '2024-01-01 00:00:00',
     updateTime: '2024-01-01 00:00:00'
   },
   {
     userId: 2,
-    userName: 'user',
+    userName: 'admin',
     password: '123456',
-    userEmail: 'user@example.com',
+    userEmail: 'admin@example.com',
     userPhone: '13800138001',
-    userGender: 'female',
+    userGender: 'male',
     avatar: '',
     status: '1',
-    roles: ['R_USER'], // 普通用户角色
-    buttons: ['view'], // 只有查看权限
+    roles: ['admin'], // 管理员角色 - 除了错误日志的所有页面，除了删除的所有按钮权限
+    buttons: ['add', 'edit', 'view', 'export', 'import'], // 除了删除的所有按钮权限
     createTime: '2024-01-01 00:00:00',
     updateTime: '2024-01-01 00:00:00'
   },
   {
     userId: 3,
-    userName: 'manager',
+    userName: 'user',
     password: '123456',
-    userEmail: 'manager@example.com',
+    userEmail: 'user@example.com',
     userPhone: '13800138002',
-    userGender: 'male',
-    avatar: '',
-    status: '2',
-    roles: ['R_ADMIN'], // 管理员角色
-    buttons: ['add', 'edit', 'view', 'export'], // 部分按钮权限
-    createTime: '2024-01-01 00:00:00',
-    updateTime: '2024-01-01 00:00:00'
-  },
-  {
-    userId: 4,
-    userName: 'test1',
-    password: '123456',
-    userEmail: 'test1@example.com',
-    userPhone: '13800138003',
-    userGender: 'unknown',
-    avatar: '',
-    status: '1',
-    roles: ['R_USER'],
-    buttons: ['view'],
-    createTime: '2024-01-02 00:00:00',
-    updateTime: '2024-01-02 00:00:00'
-  },
-  {
-    userId: 5,
-    userName: 'test2',
-    password: '123456',
-    userEmail: 'test2@example.com',
-    userPhone: '13800138004',
     userGender: 'female',
     avatar: '',
-    status: '3',
-    roles: ['R_USER'],
-    buttons: ['view'],
-    createTime: '2024-01-03 00:00:00',
-    updateTime: '2024-01-03 00:00:00'
+    status: '1',
+    roles: ['user'], // 普通用户角色 - 只拥有仪表盘、结果页面、异常页面和按钮查看权限
+    buttons: ['view'], // 只有查看权限
+    createTime: '2024-01-01 00:00:00',
+    updateTime: '2024-01-01 00:00:00'
   }
 ]
 

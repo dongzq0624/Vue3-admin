@@ -5,7 +5,7 @@ export const resultRoutes = {
   meta: {
     title: 'menus.result.title',
     icon: 'ri:checkbox-circle-line',
-    roles: ['R_SUPER']
+    roles: ['super', 'admin']
   },
   children: [
     {
@@ -16,7 +16,7 @@ export const resultRoutes = {
         title: 'menus.result.success',
         icon: 'ri:checkbox-circle-line',
         keepAlive: true,
-        roles: ['R_SUPER']
+        roles: ['super', 'admin']
       }
     },
     {
@@ -27,7 +27,7 @@ export const resultRoutes = {
         title: 'menus.result.fail',
         icon: 'ri:close-circle-line',
         keepAlive: true,
-        roles: ['R_SUPER']
+        roles: ['super', 'admin']
       }
     }
   ]

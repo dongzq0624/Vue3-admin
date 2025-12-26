@@ -5,7 +5,7 @@ export const dashboardRoutes = {
   meta: {
     title: 'menus.dashboard.title',
     icon: 'ri:pie-chart-line',
-    roles: ['R_SUPER', 'R_ADMIN']
+    roles: ['super', 'admin', 'user']
   },
   children: [
     {

@@ -17,9 +17,10 @@
   "author": "Vue3-Admin Team",
   "license": "MIT",
   "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1"
+    "node-fetch": "^3.3.2"
   }
 }

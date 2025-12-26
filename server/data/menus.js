@@ -19,7 +19,8 @@ export const menus = [
       icon: 'ri:dashboard-line',
       isHide: false,
       isHideTab: false,
-      keepAlive: true
+      keepAlive: true,
+      roles: ['super', 'admin', 'user'] // 仪表盘：所有用户都可以访问
     },
     children: [
       {
@@ -48,7 +49,7 @@ export const menus = [
       isHide: false,
       isHideTab: false,
       keepAlive: false,
-      roles: ['R_SUPER', 'R_ADMIN']
+      roles: ['super'] // 只有超级管理员可以访问系统管理
     },
     children: [
       {
@@ -62,7 +63,7 @@ export const menus = [
           isHide: false,
           isHideTab: false,
           keepAlive: true,
-          roles: ['R_SUPER', 'R_ADMIN']
+          roles: ['super'] // 用户管理页面：只有超级管理员可以访问
         }
       },
       {
@@ -76,7 +77,7 @@ export const menus = [
           isHide: false,
           isHideTab: false,
           keepAlive: true,
-          roles: ['R_SUPER']
+          roles: ['super'] // 角色管理页面：只有超级管理员可以访问
         }
       },
       {
@@ -90,7 +91,7 @@ export const menus = [
           isHide: false,
           isHideTab: false,
           keepAlive: true,
-          roles: ['R_SUPER']
+          roles: ['super'] // 角色管理页面：只有超级管理员可以访问
         }
       }
     ]
@@ -106,7 +107,7 @@ export const menus = [
       isHide: false,
       isHideTab: false,
       keepAlive: false,
-      roles: ['R_SUPER']
+      roles: ['super', 'admin'] // 结果页面：只有超级管理员和管理员可以访问
     },
     children: [
       {
@@ -120,7 +121,7 @@ export const menus = [
           isHide: false,
           isHideTab: false,
           keepAlive: true,
-          roles: ['R_SUPER']
+          roles: ['super', 'admin']
         }
       },
       {
@@ -134,7 +135,7 @@ export const menus = [
           isHide: false,
           isHideTab: false,
           keepAlive: true,
-          roles: ['R_SUPER']
+          roles: ['super', 'admin']
         }
       }
     ]
@@ -150,7 +151,7 @@ export const menus = [
       isHide: false,
       isHideTab: false,
       keepAlive: false,
-      roles: ['R_SUPER']
+      roles: ['super', 'admin'] // 异常页面：只有超级管理员和管理员可以访问
     },
     children: [
       {
@@ -165,7 +166,7 @@ export const menus = [
           isHideTab: true,
           keepAlive: true,
           isFullPage: true,
-          roles: ['R_SUPER']
+          roles: ['super', 'admin'] // 异常页面：只有超级管理员和管理员可以访问
         }
       },
       {
@@ -180,7 +181,7 @@ export const menus = [
           isHideTab: true,
           keepAlive: true,
           isFullPage: true,
-          roles: ['R_SUPER']
+          roles: ['super', 'admin'] // 异常页面：只有超级管理员和管理员可以访问
         }
       },
       {
@@ -195,7 +196,7 @@ export const menus = [
           isHideTab: true,
           keepAlive: true,
           isFullPage: true,
-          roles: ['R_SUPER']
+          roles: ['super', 'admin'] // 异常页面：只有超级管理员和管理员可以访问
         }
       }
     ]
@@ -211,7 +212,7 @@ export const menus = [
       isHide: true,
       isHideTab: false,
       keepAlive: true,
-      roles: ['R_SUPER']
+      roles: ['super'] // 错误监控大屏：只有超级管理员可以访问
     }
   }
 ]

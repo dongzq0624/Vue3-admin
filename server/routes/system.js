@@ -17,6 +17,84 @@ export const systemRouter = express.Router()
 // 而是在具体的路由处理函数中根据需要应用
 
 /**
+ * 根据用户角色过滤菜单
+ * @param {Array} menus - 所有菜单数据
+ * @param {Array} userRoles - 用户角色列表
+ * @returns {Array} 过滤后的菜单数据
+ */
+function filterMenusByRoles(menus, userRoles) {
+  return menus
+    .map((menu) => {
+      // 检查当前菜单是否有权限
+      const hasPermission = checkMenuPermission(menu, userRoles)
+
+      if (!hasPermission) {
+        return null // 无权限访问的菜单不返回
+      }
+
+      // 如果有子菜单，递归过滤
+      let filteredMenu = { ...menu }
+      if (menu.children && menu.children.length > 0) {
+        const filteredChildren = filterMenusByRoles(menu.children, userRoles)
+        filteredMenu.children = filteredChildren.filter((child) => child !== null)
+
+        // 如果过滤后没有子菜单了，但这个菜单是目录类型（有children属性），且有权限，则保留
+        // 或者如果有直接访问权限，也保留
+        if (filteredMenu.children.length === 0 && !hasDirectAccess(menu, userRoles)) {
+          // 检查是否是目录菜单（有children属性定义），如果是则保留
+          if (menu.children && Array.isArray(menu.children)) {
+            // 保留空目录菜单，让前端处理显示逻辑
+          } else {
+            return null
+          }
+        }
+      }
+
+      return filteredMenu
+    })
+    .filter((menu) => menu !== null)
+}
+
+/**
+ * 检查菜单是否有权限访问
+ * @param {Object} menu - 菜单对象
+ * @param {Array} userRoles - 用户角色列表
+ * @returns {boolean} 是否有权限
+ */
+function checkMenuPermission(menu, userRoles) {
+  // 如果菜单没有设置角色限制，所有用户都可以访问
+  if (!menu.meta || !menu.meta.roles || menu.meta.roles.length === 0) {
+    return true
+  }
+
+  // 检查用户角色是否与菜单角色有交集
+  return menu.meta.roles.some((role) => userRoles.includes(role))
+}
+
+/**
+ * 检查菜单是否有直接访问权限（不考虑子菜单）
+ * @param {Object} menu - 菜单对象
+ * @param {Array} userRoles - 用户角色列表
+ * @returns {boolean} 是否有直接访问权限
+ */
+function hasDirectAccess(menu, userRoles) {
+  // 如果菜单没有设置角色限制，或者用户角色与菜单角色有交集
+  if (!menu.meta || !menu.meta.roles || menu.meta.roles.length === 0) {
+    return true
+  }
+
+  // 检查用户角色是否与菜单角色有交集
+  const hasRolePermission = menu.meta.roles.some((role) => userRoles.includes(role))
+
+  // 如果有角色权限，且菜单有有效的component（包括布局组件），则有直接访问权限
+  if (hasRolePermission && menu.component && menu.component !== '') {
+    return true
+  }
+
+  return false
+}
+
+/**
  * 获取用户列表（分页）
  * GET /api/user/list
  *
@@ -170,12 +248,19 @@ systemRouter.get('/role/list', authenticateToken, async (req, res, next) => {
  */
 systemRouter.get('/v3/system/menus/simple', authenticateToken, async (req, res, next) => {
   try {
-    const menus = getAllMenus()
+    // 获取用户的角色信息
+    const userRoles = req.user?.roles || []
+
+    // 获取所有菜单
+    const allMenus = getAllMenus()
+
+    // 根据用户角色过滤菜单
+    const filteredMenus = filterMenusByRoles(allMenus, userRoles)
 
     res.json({
       code: 200,
       msg: '获取成功',
-      data: menus
+      data: filteredMenus
     })
   } catch (error) {
     next(error)

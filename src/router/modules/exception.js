@@ -5,7 +5,7 @@ export const exceptionRoutes = {
   meta: {
     title: 'menus.exception.title',
     icon: 'ri:error-warning-line',
-    roles: ['R_SUPER']
+    roles: ['super', 'admin']
   },
   children: [
     {
@@ -17,7 +17,7 @@ export const exceptionRoutes = {
         keepAlive: true,
         isHideTab: true,
         isFullPage: true,
-        roles: ['R_SUPER']
+        roles: ['super', 'admin']
       }
     },
     {
@@ -29,7 +29,7 @@ export const exceptionRoutes = {
         keepAlive: true,
         isHideTab: true,
         isFullPage: true,
-        roles: ['R_SUPER']
+        roles: ['super', 'admin']
       }
     },
     {
@@ -41,7 +41,7 @@ export const exceptionRoutes = {
         keepAlive: true,
         isHideTab: true,
         isFullPage: true,
-        roles: ['R_SUPER']
+        roles: ['super', 'admin']
       }
     }
   ]

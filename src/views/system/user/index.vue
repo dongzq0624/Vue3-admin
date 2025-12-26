@@ -42,17 +42,36 @@
 </template>
 
 <script setup>
-  import { ref, nextTick } from 'vue'
+  import { ref, nextTick, watch } from 'vue'
   import { h } from 'vue'
   import { ElMessage } from 'element-plus'
   import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
   import { useTable } from '@/hooks/core/useTable'
+  import { useUserStore } from '@/store/modules/user'
   import { fetchGetUserList } from '@/api/system-manage'
   import UserSearch from './modules/user-search.vue'
   import UserDialog from './modules/user-dialog.vue'
   import { ElTag, ElMessageBox, ElImage } from 'element-plus'
 
   defineOptions({ name: 'User' })
+
+  // 获取用户权限信息
+  const userStore = useUserStore()
+
+  // 监听用户信息变化，确保权限正确显示
+  watch(
+    () => userStore.getUserInfo.buttons,
+    (newButtons) => {
+      if (newButtons && newButtons.length > 0) {
+        console.log('用户信息已加载，按钮权限:', newButtons)
+        // 当用户信息加载完成后，刷新表格以确保权限正确显示
+        nextTick(() => {
+          refreshData()
+        })
+      }
+    },
+    { immediate: true }
+  )
 
   // 弹窗相关
   const dialogType = ref('add')
@@ -166,17 +185,36 @@
           label: '操作',
           width: 120,
           fixed: 'right', // 固定列
-          formatter: (row) =>
-            h('div', [
-              h(ArtButtonTable, {
-                type: 'edit',
-                onClick: () => showDialog('edit', row)
-              }),
-              h(ArtButtonTable, {
-                type: 'delete',
-                onClick: () => deleteUser(row)
-              })
-            ])
+          formatter: (row) => {
+            const buttons = []
+            const userInfo = userStore.getUserInfo
+            const userButtons = userInfo.buttons || []
+
+            console.log('用户按钮权限:', userButtons)
+            console.log('用户信息:', userInfo)
+
+            // 根据用户权限显示编辑按钮
+            if (userButtons.includes('edit')) {
+              buttons.push(
+                h(ArtButtonTable, {
+                  type: 'edit',
+                  onClick: () => showDialog('edit', row)
+                })
+              )
+            }
+
+            // 根据用户权限显示删除按钮
+            if (userButtons.includes('delete')) {
+              buttons.push(
+                h(ArtButtonTable, {
+                  type: 'delete',
+                  onClick: () => deleteUser(row)
+                })
+              )
+            }
+
+            return h('div', buttons)
+          }
         }
       ]
     }

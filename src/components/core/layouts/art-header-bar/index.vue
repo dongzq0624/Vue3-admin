@@ -183,7 +183,7 @@
   // 检查用户是否为超级管理员
   const isSuperAdmin = computed(() => {
     const userInfo = userStore.info
-    return userInfo?.roles?.includes('R_SUPER') || false
+    return userInfo?.roles?.includes('super') || false
   })
 
   // 菜单类型判断

@@ -12,8 +12,8 @@ export const roles = [
   {
     roleId: 1,
     roleName: '超级管理员',
-    roleCode: 'R_SUPER',
-    description: '拥有所有权限的超级管理员',
+    roleCode: 'super',
+    description: '拥有所有页面和按钮权限的超级管理员',
     enabled: true,
     createTime: '2024-01-01 00:00:00',
     updateTime: '2024-01-01 00:00:00'
@@ -21,8 +21,8 @@ export const roles = [
   {
     roleId: 2,
     roleName: '管理员',
-    roleCode: 'R_ADMIN',
-    description: '系统管理员，拥有大部分权限',
+    roleCode: 'admin',
+    description: '只拥有仪表盘、结果页面、异常页面和按钮查看权限',
     enabled: true,
     createTime: '2024-01-01 00:00:00',
     updateTime: '2024-01-01 00:00:00'
@@ -30,18 +30,9 @@ export const roles = [
   {
     roleId: 3,
     roleName: '普通用户',
-    roleCode: 'R_USER',
-    description: '普通用户，拥有基础权限',
+    roleCode: 'user',
+    description: '只拥有仪表盘',
     enabled: true,
-    createTime: '2024-01-01 00:00:00',
-    updateTime: '2024-01-01 00:00:00'
-  },
-  {
-    roleId: 4,
-    roleName: '访客',
-    roleCode: 'R_GUEST',
-    description: '访客角色，仅可查看',
-    enabled: false,
     createTime: '2024-01-01 00:00:00',
     updateTime: '2024-01-01 00:00:00'
   }

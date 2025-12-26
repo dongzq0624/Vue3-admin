@@ -63,7 +63,7 @@ export const staticRoutes = [
         path: '/outside/iframe/:path',
         name: 'Iframe',
         component: () => import('@/views/outside/Iframe.vue'),
-        meta: { title: 'iframe', roles: ['R_SUPER'] }
+        meta: { title: 'iframe', roles: ['super'] }
       }
     ]
   }

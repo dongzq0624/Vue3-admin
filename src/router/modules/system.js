@@ -1,11 +1,11 @@
 export const systemRoutes = {
   path: '/system',
   name: 'System',
-  component: '/system/user',
+  component: '/index/index',
   meta: {
     title: 'menus.system.title',
     icon: 'ri:user-3-line',
-    roles: ['R_SUPER', 'R_ADMIN']
+    roles: ['super']
   },
   children: [
     {
@@ -15,7 +15,7 @@ export const systemRoutes = {
       meta: {
         title: 'menus.system.user',
         keepAlive: true,
-        roles: ['R_SUPER', 'R_ADMIN']
+        roles: ['super']
       }
     },
     {
@@ -25,7 +25,7 @@ export const systemRoutes = {
       meta: {
         title: 'menus.system.role',
         keepAlive: true,
-        roles: ['R_SUPER']
+        roles: ['super']
       }
     },
     {
@@ -46,7 +46,7 @@ export const systemRoutes = {
       meta: {
         title: 'menus.system.menu',
         keepAlive: true,
-        roles: ['R_SUPER'],
+        roles: ['super'],
         authList: [
           { title: '新增', authMark: 'add' },
           { title: '编辑', authMark: 'edit' },

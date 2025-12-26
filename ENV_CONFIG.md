@@ -28,7 +28,7 @@ VITE_BASE_URL = /
 
 # API 配置（Node.js 后端）
 VITE_API_URL = /api                    # API 基础地址（通过 Vite 代理）
-VITE_API_PROXY_URL = http://localhost:3002  # 代理目标（Node.js 后端地址）
+VITE_API_PROXY_URL = http://localhost:3300  # 代理目标（Node.js 后端地址）
 
 # 权限配置
 VITE_ACCESS_MODE = backend
@@ -56,9 +56,9 @@ cp env.example .env
 
 ```env
 # 服务器端口（与前端代理地址一致）
-VITE_PORT=3002
+VITE_PORT=3300
 # 或使用简化命名
-PORT=3002
+PORT=3300
 
 # JWT Access Token 密钥（生产环境必须修改）
 VITE_JWT_ACCESS_TOKEN_SECRET=art-design-pro-access-token-secret-key-2024
@@ -94,11 +94,11 @@ VITE_JWT_REFRESH_TOKEN_EXPIRES_IN=7d
 
 3. **Vite 代理转发**
    - 匹配规则: `/api/*`
-   - 代理目标: `http://localhost:3002` (来自 `VITE_API_PROXY_URL`)
-   - 最终请求: `http://localhost:3002/api/auth/login`
+   - 代理目标: `http://localhost:3300` (来自 `VITE_API_PROXY_URL`)
+   - 最终请求: `http://localhost:3300/api/auth/login`
 
 4. **Node.js 后端处理**
-   - Express 服务器监听 `http://localhost:3002`
+   - Express 服务器监听 `http://localhost:3300`
    - 路由处理: `/api/auth/login`
 
 ## 📝 配置说明
@@ -136,7 +136,7 @@ npm install
 npm start
 ```
 
-后端将在 `http://localhost:3002` 运行
+后端将在 `http://localhost:3300` 运行
 
 ### 2. 启动前端开发服务器
 
@@ -181,7 +181,7 @@ npm run dev
 
 **检查项：**
 
-1. 后端服务是否已启动（`http://localhost:3002`）
+1. 后端服务是否已启动（`http://localhost:3300`）
 2. `VITE_API_PROXY_URL` 是否正确指向后端地址
 3. 后端路由是否正确配置
 

@@ -1,7 +1,7 @@
 // 测试错误报告 API
 async function testErrorAPI() {
   try {
-    const response = await fetch('http://localhost:3002/api/error-report', {
+    const response = await fetch('http://localhost:3300/api/error-report', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

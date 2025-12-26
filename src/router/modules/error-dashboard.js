@@ -6,6 +6,6 @@ export const errorDashboardRoutes = {
     title: '错误监控大屏',
     icon: 'ri:dashboard-line',
     isHide: true,
-    roles: ['R_SUPER']
+    roles: ['super']
   }
 }

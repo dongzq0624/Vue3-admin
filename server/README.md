@@ -29,9 +29,9 @@ npm install
 
 ```env
 # 服务器端口（与前端 VITE_PORT 保持一致）
-VITE_PORT=3002
+VITE_PORT=3300
 # 或使用 PORT（向后兼容）
-PORT=3002
+PORT=3300
 
 # JWT 密钥（生产环境必须修改为强随机字符串）
 # 支持 VITE_ 前缀（与前端保持一致）或直接使用 JWT_ 前缀
@@ -65,7 +65,7 @@ npm run dev
 npm start
 ```
 
-服务默认运行在 `http://localhost:3002`
+服务默认运行在 `http://localhost:3300`
 
 ## API 接口
 

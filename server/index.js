@@ -21,10 +21,10 @@ const app = express()
 
 /**
  * 从环境变量获取端口
- * 只使用 PORT 环境变量或默认 3002 端口
+ * 只使用 PORT 环境变量或默认 3300 端口
  * 避免与前端 VITE_PORT 冲突
  */
-const PORT = process.env.PORT || 3002
+const PORT = process.env.PORT || 3300
 
 // 中间件配置
 app.use(

@@ -16,13 +16,13 @@
  * ```vue
  * <template>
  *   <!-- 单个角色 - 只有超级管理员可见 -->
- *   <el-button v-roles="'R_SUPER'">超级管理员功能</el-button>
+ *   <el-button v-roles="'super'">超级管理员功能</el-button>
  *
- *   <!-- 多个角色 - 超级管理员或普通管理员可见 -->
- *   <el-button v-roles="['R_SUPER', 'R_ADMIN']">管理员功能</el-button>
+ *   <!-- 多个角色 - 超级管理员或管理员可见 -->
+ *   <el-button v-roles="['super', 'admin']">管理员功能</el-button>
  *
  *   <!-- 应用到任意元素 -->
- *   <div v-roles="['R_SUPER', 'R_ADMIN', 'R_USER']">
+ *   <div v-roles="['super', 'admin', 'user']">
  *     所有登录用户可见的内容
  *   </div>
  * </template>
