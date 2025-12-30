@@ -4,15 +4,15 @@
  * 提供与服务端错误报告相关的接口调用
  */
 
-import request from '@/utils/http'
+import api from '@/utils/http'
 
 /**
  * 获取错误统计信息
  * @returns {Promise} 错误统计数据
  */
 export function getErrorStats() {
-  return request({
-    url: '/error-report/stats',
+  return api.request({
+    url: '/api/error-report/stats',
     method: 'get'
   })
 }
@@ -28,8 +28,8 @@ export function getErrorStats() {
  * @returns {Promise} 错误日志列表
  */
 export function getErrorLogs(params = {}) {
-  return request({
-    url: '/error-report/logs',
+  return api.request({
+    url: '/api/error-report/logs',
     method: 'get',
     params
   })
@@ -41,8 +41,8 @@ export function getErrorLogs(params = {}) {
  * @returns {Promise} 上报结果
  */
 export function reportErrors(errors) {
-  return request({
-    url: '/error-report',
+  return api.request({
+    url: '/api/error-report',
     method: 'post',
     data: {
       errors,
@@ -60,8 +60,8 @@ export function reportErrors(errors) {
  * @returns {Promise} 错误趋势数据
  */
 export function getErrorTrends(params = {}) {
-  return request({
-    url: '/error-report/trends',
+  return api.request({
+    url: '/api/error-report/trends',
     method: 'get',
     params
   })
@@ -75,8 +75,8 @@ export function getErrorTrends(params = {}) {
  * @returns {Promise} 错误类型分布数据
  */
 export function getErrorDistribution(params = {}) {
-  return request({
-    url: '/error-report/distribution',
+  return api.request({
+    url: '/api/error-report/distribution',
     method: 'get',
     params
   })
@@ -88,8 +88,8 @@ export function getErrorDistribution(params = {}) {
  * @returns {Promise} 删除结果
  */
 export function deleteError(errorId) {
-  return request({
-    url: `/error-report/logs/${errorId}`,
+  return api.request({
+    url: `/api/error-report/logs/${errorId}`,
     method: 'delete'
   })
 }
@@ -100,8 +100,8 @@ export function deleteError(errorId) {
  * @returns {Promise} 删除结果
  */
 export function batchDeleteErrors(errorIds) {
-  return request({
-    url: '/error-report/logs/batch',
+  return api.request({
+    url: '/api/error-report/logs/batch',
     method: 'delete',
     data: { errorIds }
   })
@@ -117,8 +117,8 @@ export function batchDeleteErrors(errorIds) {
  * @returns {Promise} 导出结果
  */
 export function exportErrors(params = {}) {
-  return request({
-    url: '/error-report/export',
+  return api.request({
+    url: '/api/error-report/export',
     method: 'get',
     params: {
       ...params,

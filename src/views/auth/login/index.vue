@@ -212,10 +212,13 @@
       // 登录请求
       const { username, password } = formData
 
-      const { token, refreshToken } = await fetchLogin({
+      const response = await fetchLogin({
         userName: username,
         password
       })
+
+      // 从响应数据中提取 token
+      const { token, refreshToken } = response.data
 
       // 验证token
       if (!token) {

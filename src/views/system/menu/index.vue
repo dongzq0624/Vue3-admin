@@ -106,8 +106,12 @@
     loading.value = true
 
     try {
-      const list = await fetchGetMenuList()
-      tableData.value = list
+      const response = await fetchGetMenuList()
+      if (response.code === 200) {
+        tableData.value = response.data
+      } else {
+        tableData.value = []
+      }
     } catch (error) {
       throw error instanceof Error ? error : new Error('获取菜单失败')
     } finally {

@@ -463,8 +463,8 @@ async function request(config) {
       showSuccess(res.data.msg)
     }
 
-    // 返回响应数据中的 data 字段（业务数据）
-    return res.data.data
+    // 返回完整的响应对象，包含 code、msg、data
+    return res.data
   } catch (error) {
     // 处理错误：如果是 HttpError 且不是 401 错误，则显示错误消息
     // 401 错误已在拦截器中处理，这里不再重复显示

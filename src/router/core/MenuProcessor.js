@@ -56,8 +56,11 @@ export class MenuProcessor {
    * 处理后端控制模式的菜单
    */
   async processBackendMenu() {
-    const list = await fetchGetMenuList()
-    return this.filterEmptyMenus(list)
+    const response = await fetchGetMenuList()
+    if (response.code === 200) {
+      return this.filterEmptyMenus(response.data)
+    }
+    return []
   }
 
   /**

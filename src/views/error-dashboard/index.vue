@@ -4,9 +4,7 @@
       <h1 class="dashboard-title">
         <ArtSvgIcon icon="ri:alert-line" class="title-icon" />
         错误监控大屏
-        <span class="data-source-badge" :class="`source-${dataSource}`">
-          {{ dataSource === 'frontend' ? '前端内存数据' : '服务端数据' }}
-        </span>
+        <span class="data-source-badge source-backend"> 服务端监控数据 </span>
       </h1>
       <div class="header-actions">
         <ElButton type="primary" @click="refreshData" :loading="refreshing">
@@ -25,15 +23,10 @@
           <ArtSvgIcon icon="ri:image-add-line" />
           上传错误截图
         </ElButton>
-
-        <!-- 数据源切换 -->
-        <div class="data-source-switch">
-          <span class="switch-label">数据源:</span>
-          <ElSelect v-model="dataSource" @change="handleDataSourceChange" style="width: 120px">
-            <ElOption label="前端内存" value="frontend" />
-            <ElOption label="服务端数据" value="backend" />
-          </ElSelect>
-        </div>
+        <ElButton type="danger" @click="simulateRandomError" :loading="generatingRandomError">
+          <ArtSvgIcon icon="ri:shuffle-line" />
+          随机模拟错误
+        </ElButton>
 
         <input
           ref="imageInputRef"
@@ -160,11 +153,11 @@
         <div class="filters">
           <ElSelect v-model="filterType" placeholder="错误类型" clearable style="width: 120px">
             <ElOption label="全部" value="" />
-            <ElOption label="Vue错误" value="vue" />
-            <ElOption label="脚本错误" value="script" />
-            <ElOption label="Promise错误" value="promise" />
-            <ElOption label="资源错误" value="resource" />
-            <ElOption label="网络错误" value="network" />
+            <ElOption label="Vue错误" value="vue_error" />
+            <ElOption label="脚本错误" value="javascript_error" />
+            <ElOption label="Promise错误" value="promise_error" />
+            <ElOption label="资源错误" value="resource_error" />
+            <ElOption label="网络错误" value="network_error" />
           </ElSelect>
           <ElInput
             v-model="searchKeyword"
@@ -315,7 +308,6 @@
   import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
   import { format, formatDistanceToNow, subHours, eachHourOfInterval } from 'date-fns'
   import { zhCN } from 'date-fns/locale'
-  import { mittBus } from '@/utils/sys'
   import {
     ElMessage,
     ElMessageBox,
@@ -331,6 +323,7 @@
   import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue'
   import * as echarts from 'echarts'
   import { getErrorStats, getErrorLogs } from '@/api/error-report'
+  import { log } from 'encode-monitor-core'
 
   // 响应式数据
   const refreshing = ref(false)
@@ -339,8 +332,9 @@
   const filterType = ref('')
   const searchKeyword = ref('')
   const errorList = ref([])
-  const dataSource = ref('frontend') // 'frontend' 或 'backend'
+  const dataSource = ref('backend') // 'backend' 数据源
   const loadingServerData = ref(false)
+  const generatingRandomError = ref(false)
 
   // 图表相关
   const trendChartRef = ref(null)
@@ -368,18 +362,23 @@
     errorList.value.forEach((error) => {
       switch (error.type) {
         case 'vue':
+        case 'vue_error':
           stats.vue++
           break
         case 'script':
+        case 'javascript_error':
           stats.script++
           break
         case 'promise':
+        case 'promise_error':
           stats.promise++
           break
         case 'resource':
+        case 'resource_error':
           stats.resource++
           break
         case 'network':
+        case 'network_error':
           stats.network++
           break
         case 'image':
@@ -458,38 +457,20 @@
   })
 
   // 表格列配置
-  // 错误处理函数
-  const handleErrorLog = (errorInfo) => {
-    // 增强错误信息
-    const enhancedError = {
-      id: Date.now() + Math.random(),
-      time: new Date(),
-      userAgent: navigator.userAgent,
-      url: window.location.href,
-      ...errorInfo
-    }
-
-    errorList.value.unshift(enhancedError)
-
-    // 限制错误列表长度，避免内存泄漏
-    if (errorList.value.length > 1000) {
-      errorList.value = errorList.value.slice(0, 1000)
-    }
-
-    // 更新图表
-    nextTick(() => {
-      updateCharts()
-    })
-  }
 
   // 获取错误类型标签
   const getTypeLabel = (type) => {
     const labels = {
       vue: 'Vue错误',
+      vue_error: 'Vue错误',
       script: '脚本错误',
+      javascript_error: '脚本错误',
       promise: 'Promise错误',
+      promise_error: 'Promise错误',
       resource: '资源错误',
+      resource_error: '资源错误',
       network: '网络错误',
+      network_error: '网络错误',
       image: '图片截图'
     }
     return labels[type] || '未知错误'
@@ -499,10 +480,15 @@
   const getTagType = (type) => {
     const types = {
       vue: 'danger',
+      vue_error: 'danger',
       script: 'warning',
+      javascript_error: 'warning',
       promise: 'info',
+      promise_error: 'info',
       resource: 'success',
+      resource_error: 'success',
       network: 'primary',
+      network_error: 'primary',
       image: 'primary'
     }
     return types[type] || 'default'
@@ -518,16 +504,6 @@
     return formatDistanceToNow(time, { addSuffix: true, locale: zhCN })
   }
 
-  // 数据源切换处理
-  const handleDataSourceChange = async () => {
-    if (dataSource.value === 'backend') {
-      await loadServerData()
-    } else {
-      // 切换回前端数据时，触发一次更新
-      updateCharts()
-    }
-  }
-
   // 从服务端加载数据
   const loadServerData = async () => {
     try {
@@ -535,16 +511,16 @@
 
       // 获取服务端统计数据
       const statsResponse = await getErrorStats()
-      if (statsResponse.success) {
-        // 这里可以根据服务端数据更新前端的统计显示
-        // 暂时只获取最新的错误日志
+
+      if (statsResponse.code === 200) {
+        // 获取最新的错误日志
         const logsResponse = await getErrorLogs({
           page: 1,
           pageSize: 1000, // 获取最近1000条记录
           type: filterType.value || undefined
         })
 
-        if (logsResponse.success) {
+        if (logsResponse.code === 200) {
           // 将服务端数据转换为前端格式
           const serverErrors = logsResponse.data.logs.map((log) => ({
             id: log.id,
@@ -569,10 +545,8 @@
             })
           }))
 
-          // 更新错误列表（这里可以选择替换或合并）
+          // 更新错误列表
           errorList.value = serverErrors
-
-          ElMessage.success(`已加载服务端数据，共 ${serverErrors.length} 条记录`)
         }
       }
 
@@ -580,8 +554,8 @@
       updateCharts()
     } catch (error) {
       console.error('加载服务端数据失败:', error)
-      ElMessage.error('加载服务端数据失败，已切换回前端数据')
-      dataSource.value = 'frontend'
+      ElMessage.error('加载服务端数据失败')
+      throw error
     } finally {
       loadingServerData.value = false
     }
@@ -592,14 +566,7 @@
     refreshing.value = true
 
     try {
-      if (dataSource.value === 'backend') {
-        await loadServerData()
-      } else {
-        // 前端数据刷新逻辑
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-        updateCharts()
-      }
-
+      await loadServerData()
       ElMessage.success('数据已刷新')
     } catch (error) {
       console.error('数据刷新失败:', error)
@@ -682,6 +649,128 @@
       .catch(() => {
         ElMessage.error('复制失败')
       })
+  }
+
+  // 模拟随机错误
+  const simulateRandomError = () => {
+    generatingRandomError.value = true
+
+    // 随机错误类型和消息
+    const errorTypes = [
+      // JavaScript运行时错误
+      {
+        type: 'javascript_error',
+        generator: () => {
+          const errors = [
+            "Cannot read property 'map' of undefined",
+            "Cannot read property 'length' of null",
+            'TypeError: undefined is not a function',
+            'ReferenceError: variable is not defined',
+            'SyntaxError: Unexpected token in JSON',
+            'RangeError: Invalid array length',
+            'URIError: malformed URI sequence'
+          ]
+          const randomError = errors[Math.floor(Math.random() * errors.length)]
+          return new Error(`${randomError} [Random ID: ${Date.now()}]`)
+        }
+      },
+      // Promise rejection错误
+      {
+        type: 'promise_error',
+        generator: () => {
+          const errors = [
+            'Network request failed: Connection timeout',
+            'API request rejected: Invalid authentication',
+            'Database query failed: Connection lost',
+            'File upload failed: Insufficient permissions',
+            'Async operation cancelled by user',
+            'Service unavailable: Server maintenance',
+            'Rate limit exceeded: Too many requests'
+          ]
+          const randomError = errors[Math.floor(Math.random() * errors.length)]
+          return new Error(`${randomError} [Random ID: ${Date.now()}]`)
+        }
+      },
+      // 自定义业务错误
+      {
+        type: 'custom_error',
+        generator: () => {
+          const errors = [
+            'Business logic error: Invalid user input',
+            'Validation failed: Required field missing',
+            'Permission denied: Insufficient access rights',
+            'Resource not found: Item does not exist',
+            'Operation timeout: Process took too long',
+            'Data corruption: Invalid data format',
+            'Configuration error: Missing environment variable'
+          ]
+          const randomError = errors[Math.floor(Math.random() * errors.length)]
+          const customError = new Error(`${randomError} [Random ID: ${Date.now()}]`)
+          customError.name = 'CustomError'
+          return customError
+        }
+      },
+      // DOM操作错误
+      {
+        type: 'dom_error',
+        generator: () => {
+          const errors = [
+            'Cannot set property of null',
+            'Cannot read property of null (DOM element)',
+            'Element not found in document',
+            'Invalid DOM operation: Node not found',
+            'Event listener error: Handler not found',
+            'DOM manipulation failed: Invalid selector',
+            'Canvas rendering error: Context lost'
+          ]
+          const randomError = errors[Math.floor(Math.random() * errors.length)]
+          return new Error(`${randomError} [Random ID: ${Date.now()}]`)
+        }
+      },
+      // 数学计算错误
+      {
+        type: 'math_error',
+        generator: () => {
+          const errors = [
+            'Division by zero error',
+            'Invalid mathematical operation',
+            'Number overflow: Value too large',
+            'Precision loss in calculation',
+            'Invalid logarithm argument',
+            'Square root of negative number',
+            'Invalid trigonometric function input'
+          ]
+          const randomError = errors[Math.floor(Math.random() * errors.length)]
+          return new Error(`${randomError} [Random ID: ${Date.now()}]`)
+        }
+      }
+    ]
+
+    // 随机选择错误类型
+    const randomType = errorTypes[Math.floor(Math.random() * errorTypes.length)]
+
+    // 显示消息提示
+    ElMessage.info('随机错误已生成，请等待几秒钟查看错误监控结果')
+
+    // 立即重置加载状态，避免UI卡住
+    generatingRandomError.value = false
+
+    // 使用Promise.resolve().then()确保在微任务中执行
+    Promise.resolve().then(() => {
+      // 生成随机错误
+      const error = randomType.generator()
+      console.log(`[Random Error] 生成类型: ${randomType.type}, 错误: ${error.message}`)
+
+      // 方式1: 手动使用SDK上报（确保上报成功）
+      log({
+        message: error.message,
+        level: 'error',
+        tag: `random_${randomType.type}`
+      })
+
+      // 方式2: 同时抛出错误，让SDK的window.onerror也捕获
+      throw error
+    })
   }
 
   // 触发图片上传
@@ -968,8 +1057,6 @@
 
   // 生命周期
   onMounted(() => {
-    mittBus.on('error-log', handleErrorLog)
-
     // 等待DOM更新后初始化图表
     nextTick(() => {
       initTrendChart()
@@ -978,11 +1065,12 @@
 
     // 监听窗口大小变化
     window.addEventListener('resize', handleResize)
+
+    // 初始加载数据
+    refreshData()
   })
 
   onUnmounted(() => {
-    mittBus.off('error-log', handleErrorLog)
-
     // 清理图表实例
     if (trendChart) {
       trendChart.dispose()
@@ -1034,18 +1122,10 @@
     margin-left: 16px;
     font-size: 12px;
     font-weight: 500;
-    text-transform: uppercase;
-    border-radius: 12px;
-  }
-
-  .data-source-badge.source-frontend {
-    color: #1d4ed8;
-    background: #dbeafe;
-  }
-
-  .data-source-badge.source-backend {
     color: #166534;
+    text-transform: uppercase;
     background: #dcfce7;
+    border-radius: 12px;
   }
 
   .header-actions {

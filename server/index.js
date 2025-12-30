@@ -12,6 +12,7 @@ import dotenv from 'dotenv'
 import { authRouter } from './routes/auth.js'
 import { userRouter } from './routes/user.js'
 import { systemRouter } from './routes/system.js'
+import errorReportRouter from './routes/error-report.js'
 import { errorHandler } from './middleware/errorHandler.js'
 
 // 加载环境变量
@@ -45,73 +46,9 @@ app.use((req, res, next) => {
 // 路由配置
 app.use('/api/auth', authRouter) // 认证相关路由
 app.use('/api/user', userRouter) // 用户相关路由
+app.use('/api', errorReportRouter) // 错误报告路由
 
-// 错误报告路由 - 完全跳过认证
-app.post('/api/error-report', async (req, res) => {
-  // 直接处理错误报告请求，绕过认证
-  try {
-    const { errors } = req.body
-
-    if (!Array.isArray(errors) || errors.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: '错误数据格式不正确'
-      })
-    }
-
-    console.log(`[ErrorReport] 收到 ${errors.length} 条错误报告`)
-
-    // 这里可以添加数据处理逻辑
-    // 暂时直接返回成功响应
-
-    res.json({
-      success: true,
-      message: `成功接收 ${errors.length} 条错误报告`,
-      receivedCount: errors.length
-    })
-  } catch (error) {
-    console.error('[ErrorReport] 处理错误报告失败:', error)
-    res.status(500).json({
-      success: false,
-      message: '服务器内部错误'
-    })
-  }
-})
-
-// 同步错误报告路由
-app.post('/api/error-report/sync', (req, res) => {
-  // 对于同步上报，直接返回成功
-  res.status(200).send('OK')
-})
-
-// 获取错误统计
-app.get('/api/error-report/stats', (req, res) => {
-  res.json({
-    success: true,
-    data: {
-      totalErrors: 0,
-      errorTypes: {},
-      dailyStats: {},
-      lastUpdated: new Date().toISOString()
-    }
-  })
-})
-
-// 获取错误日志
-app.get('/api/error-report/logs', (req, res) => {
-  res.json({
-    success: true,
-    data: {
-      logs: [],
-      pagination: {
-        page: 1,
-        pageSize: 50,
-        total: 0,
-        totalPages: 0
-      }
-    }
-  })
-})
+// 错误报告路由已通过 errorReportRouter 注册
 
 app.use('/api', systemRouter) // 系统管理路由（用户列表、角色列表等）
 app.use('/api/v3', systemRouter) // 系统管理路由（菜单列表等）

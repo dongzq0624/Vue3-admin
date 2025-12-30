@@ -331,10 +331,12 @@ async function handleDynamicRoutes(to, next, router) {
  */
 async function fetchUserInfo() {
   const userStore = useUserStore()
-  const data = await fetchGetUserInfo()
-  userStore.setUserInfo(data)
-  // 检查并清理工作台标签页（如果是不同用户登录）
-  userStore.checkAndClearWorktabs()
+  const response = await fetchGetUserInfo()
+  if (response.code === 200) {
+    userStore.setUserInfo(response.data)
+    // 检查并清理工作台标签页（如果是不同用户登录）
+    userStore.checkAndClearWorktabs()
+  }
 }
 
 /**

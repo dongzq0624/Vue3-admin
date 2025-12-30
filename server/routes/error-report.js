@@ -83,12 +83,34 @@ async function saveErrorLogs(data) {
  */
 router.post('/error-report', async (req, res) => {
   try {
-    const { errors, clientVersion, clientType } = req.body
+    const body = req.body
+
+    // 处理SDK上报的数据格式 (TransportDataType)
+    let errors = []
+    let clientVersion = 'unknown'
+    let clientType = 'web'
+
+    // 检查是否是SDK上报的数据格式
+    if (body.authInfo && body.data) {
+      // SDK格式: { authInfo, data, breadcrumb, deviceInfo }
+      errors = [body.data] // 将单个错误包装成数组
+      clientVersion = '3.0.1' // 默认版本
+      clientType = 'web'
+    } else {
+      // 原有格式: { errors, clientVersion, clientType }
+      const { errors: bodyErrors, clientVersion: bodyVersion, clientType: bodyType } = body
+      errors = bodyErrors
+      clientVersion = bodyVersion || 'unknown'
+      clientType = bodyType || 'web'
+    }
+
+    console.log('[ErrorReport] 处理后的errors:', errors)
 
     if (!Array.isArray(errors) || errors.length === 0) {
       return res.status(400).json({
-        success: false,
-        message: '错误数据格式不正确'
+        code: 400,
+        msg: '错误数据格式不正确',
+        data: null
       })
     }
 
@@ -100,32 +122,33 @@ router.post('/error-report', async (req, res) => {
 
     // 处理每条错误记录
     const processedErrors = errors.map((error) => ({
-      id: error.id || `server_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      type: error.type,
-      message: error.message,
-      source: error.source,
-      lineno: error.lineno,
-      colno: error.colno,
-      stack: error.stack,
-      timestamp: error.timestamp,
-      sessionId: error.sessionId,
-      userId: error.userId,
-      deviceInfo: error.deviceInfo,
-      url: error.url,
-      userAgent: error.userAgent,
-      referrer: error.referrer,
-      screenResolution: error.screenResolution,
-      viewportSize: error.viewportSize,
-      clientVersion: clientVersion || 'unknown',
-      clientType: clientType || 'unknown',
-      serverReceivedAt: new Date().toISOString(),
-      // 如果是图片类型的错误，需要特殊处理
-      ...(error.imageData && {
-        imageData: error.imageData,
-        imageName: error.imageName,
-        imageSize: error.imageSize,
-        imageType: error.imageType
-      })
+      id: error.errorId
+        ? `sdk_${error.errorId}`
+        : `server_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      type: error.type || 'unknown_error',
+      message: error.message || 'Unknown error',
+      source: error.url || window?.location?.href || 'unknown',
+      lineno: error.lineno || 0,
+      colno: error.colno || 0,
+      stack: error.stack || '',
+      timestamp: error.time || Date.now(),
+      sessionId: 'session_' + Date.now(),
+      userId: 'user_unknown',
+      deviceInfo: {
+        platform: 'Node.js Server',
+        language: 'Unknown',
+        cookieEnabled: false,
+        online: true,
+        timezone: 'UTC'
+      },
+      url: error.url || 'unknown',
+      userAgent: 'Node.js Server',
+      referrer: '',
+      screenResolution: '0x0',
+      viewportSize: '0x0',
+      clientVersion: clientVersion || '3.0.1',
+      clientType: clientType || 'web',
+      serverReceivedAt: new Date().toISOString()
     }))
 
     // 添加到日志列表
@@ -146,16 +169,18 @@ router.post('/error-report', async (req, res) => {
     console.log(`[ErrorReport] 成功处理 ${processedErrors.length} 条错误记录`)
 
     res.json({
-      success: true,
-      message: `成功接收 ${processedErrors.length} 条错误报告`,
-      receivedCount: processedErrors.length
+      code: 200,
+      msg: `成功接收 ${processedErrors.length} 条错误报告`,
+      data: {
+        receivedCount: processedErrors.length
+      }
     })
   } catch (error) {
     console.error('[ErrorReport] 处理错误报告失败:', error)
     res.status(500).json({
-      success: false,
-      message: '服务器内部错误',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      code: 500,
+      msg: '服务器内部错误',
+      data: null
     })
   }
 })
@@ -220,14 +245,16 @@ router.get('/error-report/stats', async (req, res) => {
     const logData = await readErrorLogs()
 
     res.json({
-      success: true,
-      data: logData.summary
+      code: 200,
+      msg: '获取统计信息成功',
+      data: logData
     })
   } catch (error) {
     console.error('[ErrorReport] 获取统计信息失败:', error)
     res.status(500).json({
-      success: false,
-      message: '获取统计信息失败'
+      code: 500,
+      msg: '获取统计信息失败',
+      data: null
     })
   }
 })
@@ -268,7 +295,8 @@ router.get('/error-report/logs', async (req, res) => {
     const paginatedLogs = filteredLogs.slice(startIndex, endIndex)
 
     res.json({
-      success: true,
+      code: 200,
+      msg: '获取错误日志成功',
       data: {
         logs: paginatedLogs,
         pagination: {
@@ -282,8 +310,9 @@ router.get('/error-report/logs', async (req, res) => {
   } catch (error) {
     console.error('[ErrorReport] 获取错误日志失败:', error)
     res.status(500).json({
-      success: false,
-      message: '获取错误日志失败'
+      code: 500,
+      msg: '获取错误日志失败',
+      data: null
     })
   }
 })

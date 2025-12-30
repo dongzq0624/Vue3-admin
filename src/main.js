@@ -7,7 +7,7 @@ import '@styles/core/tailwind.css' // tailwind
 import '@styles/index.scss' // 样式
 import '@utils/sys/console.js' // 控制台输出内容
 import { setupGlobDirectives } from './directives'
-import { setupErrorHandle } from './utils/sys/error-handle'
+import { initMonitor } from './config/monitor' // 前端监控
 
 document.addEventListener(
   'touchstart',
@@ -19,7 +19,7 @@ const app = createApp(App)
 initStore(app)
 initRouter(app)
 setupGlobDirectives(app)
-setupErrorHandle(app)
+initMonitor(app)
 
 app.use(language)
 app.mount('#app')
